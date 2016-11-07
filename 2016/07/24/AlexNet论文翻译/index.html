@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(翻译篇) | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="ImageNet Classification with Deep Convolution Neural Network在2012年的ImageNet挑战赛上大显神威，以绝对优势夺得冠军，是卷积神经网络的开山之作，引领了人工智能的新一轮发展。怀着对经典的无限景仰，小心翼翼地翻译了一下这篇论文，以加深理解。论文地址：http://papers.nips.cc/paper/4824-image">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(翻译篇)">
+<meta property="og:url" content="http://yoursite.com/2016/07/24/AlexNet论文翻译/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="ImageNet Classification with Deep Convolution Neural Network在2012年的ImageNet挑战赛上大显神威，以绝对优势夺得冠军，是卷积神经网络的开山之作，引领了人工智能的新一轮发展。怀着对经典的无限景仰，小心翼翼地翻译了一下这篇论文，以加深理解。论文地址：http://papers.nips.cc/paper/4824-image">
+<meta property="og:image" content="http://yoursite.com/img/figure1.png">
+<meta property="og:image" content="http://yoursite.com/img/lrn.png">
+<meta property="og:image" content="http://yoursite.com/img/figure2.png">
+<meta property="og:image" content="http://yoursite.com/img/pca.png">
+<meta property="og:image" content="http://yoursite.com/img/figure3.png">
+<meta property="og:image" content="http://yoursite.com/img/genx.png">
+<meta property="og:image" content="http://yoursite.com/img/table1.png">
+<meta property="og:image" content="http://yoursite.com/img/table2.png">
+<meta property="og:image" content="http://yoursite.com/img/figure4.png">
+<meta property="og:updated_time" content="2016-07-25T03:28:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(翻译篇)">
+<meta name="twitter:description" content="ImageNet Classification with Deep Convolution Neural Network在2012年的ImageNet挑战赛上大显神威，以绝对优势夺得冠军，是卷积神经网络的开山之作，引领了人工智能的新一轮发展。怀着对经典的无限景仰，小心翼翼地翻译了一下这篇论文，以加深理解。论文地址：http://papers.nips.cc/paper/4824-image">
+<meta name="twitter:image" content="http://yoursite.com/img/figure1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-AlexNet论文翻译" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/24/AlexNet论文翻译/" class="article-date">
+  <time datetime="2016-07-24T11:42:06.000Z" itemprop="datePublished">2016-07-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(翻译篇)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>　　　　ImageNet Classification with Deep Convolution Neural Network在2012年的ImageNet挑战赛上大显神威，以绝对优势夺得冠军，是卷积神经网络的开山之作，引领了人工智能的新一轮发展。怀着对经典的无限景仰，小心翼翼地翻译了一下这篇论文，以加深理解。论文地址：<a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks" target="_blank" rel="external">http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks</a></p>
+<h1 id="ImageNet-Classification-with-Deep-Convolution-Neural-Network"><a href="#ImageNet-Classification-with-Deep-Convolution-Neural-Network" class="headerlink" title="ImageNet Classification with Deep Convolution Neural Network"></a>ImageNet Classification with Deep Convolution Neural Network</h1><h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>我们训练了一个大型的深层卷积神经网络来将ImageNet LSVRC-2010挑战赛上的120万张高清图片分为1000类。在测试数据集上，我们实现了top-1 top-5的错误率 37.5% 和 17.0%,这比之前最好的结果都还要好很多。这个网络有6000万参数和65万个神经元，包含5个卷积层，一些卷积层后面连接有max-pooling层，还有三层全连接层后面接有1000-way的softmax.为了加快训练速度，我们使用了非饱和神经元和一个对卷积操作非常有效的GPU。为了减少全连接层的过拟合问题，我们使用了最近开发的正则化方法“dropout”,它被证明是非常有效的。在ILSVRC-2012比赛中，我们又输入了这个模型的一个变形，在top-5的的测试中错误率达到了15.3%,相比之下，第二名错误率为26.2%.</p>
+<h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>当前的物体识别都必不可少地使用了机器学习方法。为了提高这些方法，我们可以收集更大的数据集，学习更多有效的模型，使用更好的技巧来防止过拟合。直到现在，有标记的图像数据集是相当小的—大约数万张(如NORB [16], Caltech-101/256 [8, 9], and CIFAR-10/100 [12])。简单的识别任务用这些大小的数据集能很好的解决，尤其当它们被标签–保留转换增强了以后。例如，最近在MNIST数字识别任务中的错误率(&lt;0.3%)达到了人类水平。但是，在真实物体数据集中却表现出了相当大的变化，所以，为了学习识别它们，使用更大的数据集是非常必要的。的确，小规模图像数据集的缺点已经被广泛地发现了，但是，收集百万张有标记的图片数据集最近才变成了可能。新的更大的数据集包括LabelMe，包含几十万张完全分割的图片，还有Image-net，包含150万超过2200种标记的高清图片。<br>为了从百万张图片中学习上千种物体，我们需要一个具有强大学习能力的模型。然而，物体识别任务的巨大复杂性意味着这个问题甚至不能被ImagenNet这么大的数据集明确规定，所以，我们的模型可能也有许多先验知识来弥补我们没有的所有数据。卷积神经网络构建了一个这种类型的模型。它们的能力可以通过改变它们的深度和广度来控制，而且它们也可以作出有关图像性质的强壮和最大准确率的假设。(即，统计数据的稳定性和像素依赖的局部性).因此，相比于具有同样规模的标准前馈神经网络，CNNs有更少的连接和参数，所以它们是更容易训练的，而它们理论上的最佳性能可能仅仅差了一点点。<br>尽管CNN有非常吸引人的品质，以及它自身的结构的相对较高的效率，但是应用到大规模高清图像上还是非常昂贵的。幸运的是，现在的GPU和实现高度优化的2D卷积的配合是足够强大的，可以促进大规模CNN的训练，并且最近像ImageNet这样的数据集包含了足够的被标记例子来训练出没有严重过拟合的模型。<br>这篇论文具体的贡献如下：我们训练了一个最大的卷积神经网络来标记ILSVRC-2010 和 ILSVRC-2012比赛的数据集，并且实现了到目前为止在这些数据集上的最好结果。我们写了一个实现2D卷积的高度优化的GPU和其他的一些公开的训练卷积神经网络的固有操作。我们的网络包含大量新的和不寻常特点，这些特点提高了网络的效率并且减少了训练时间，详细介绍在第三部分。我们的网络规模解决了过拟合这个重要问题，即使有1200万被标记的训练图片，我们使用了大量有效的技巧来防止过拟合，这将在第四部分详细介绍。我们最终的网络包含5个卷积层和三个全连接层，而且这个深度似乎是非常重要的：我们发现移除任何一个卷积层(每层包含的参数不足整个模型的1%)都会导致非常差的效果。<br>最后，网络的大小主要由当前GPU的可用内存数量和我们所能忍受的训练时间所限制。我们的网络在两块3G的GTX 580GPU上训练了五六天的时间。所有的实验表明，我们的结果还能通过更快的GPU和更大的可用数据集来进一步提高。</p>
+<h2 id="2-The-Dataset"><a href="#2-The-Dataset" class="headerlink" title="2 The Dataset"></a>2 The Dataset</h2><p>ImageNet是一个超过1500万张包含22000种类的被标记的高清图像数据集。这些图片收集自web，使用Ama-zon’s Mechanical Turk的工具箱来人工标记。从2010年开始，作为Pascal视觉对象挑战赛的一部分，一年一度的ImageNet Large-Scale Visual Recognition   Challenge(ILSVRC)开始举行。ILSVRC使用ImageNet的子集，包含1000种图像，每种包含1000张图片。总共有120万张训练图片，5万张验证图片和15万张测试图片。<br>ILSVRC-2010是唯一的测试标签可用的版本，所以我们用它来做大量的实验。当然我们也使我们的模型参加ILSVRC-2012比赛，在第六部分我们也会展示这一版数据集上的结果，其测试标签不可用。在ImageNet上，通常报告两类错误率：top-1和top-5，top5错误率表示测试图片的标签不在模型所认为的五种标签之内。<br>ImageNet包含的图片分辨率是变化的，然而我们的系统需要的输入维数是一个常量。因此，我们采样这些图片一个固定的像素值256X256。给定一张矩形的图片，我们首先重置这张图片的短边长度为256，然后从得到的图片中裁剪出中心的256X256。除了从每一个像素中减去平均值外，我们没有做任何其他的操作。所以，我们在像素的原始RGB值(裁剪出的中心部分)上训练我们的网络。</p>
+<h2 id="3-The-Architecture"><a href="#3-The-Architecture" class="headerlink" title="3 The Architecture"></a>3 The Architecture</h2><p>我们的网络结构总结在图2中。它包含8个学习层—–5个卷积层和3个全连接层。接下来，介绍一下我们这个网络的神奇和不寻常的特点。3.1–3.4节根据我们对它们的重要性的估计来排序，最重要的在第一个。</p>
+<h3 id="3-1-Relu-Nonlinearity"><a href="#3-1-Relu-Nonlinearity" class="headerlink" title="3.1 Relu Nonlinearity"></a>3.1 Relu Nonlinearity</h3><p>一般的方法是将神经元的输出作为函数f(x)=tanh(x) 或f(x)=(1+e^-x)^-1的输入x 。依据梯度下降的时间，这些饱和非线性函数是比不饱和非线性函数f(x)=max(0,x)更慢的。根据Nair和Hinton，我们参考非线性的神经元Rectified Linear Units (ReLUs).用RELUs训练的深层卷积神经网络比用tanh等价的神经网络快很多倍。如图1，显示了一个特别的四层卷积神经网络在CIFAR-10数据集上达到25%的错误率所需要的迭代次数。这个图说明如果我们使用了饱和的神经元模型，我们将不能使用这么大规模的神经网络来做这个实验。<br>我们不是第一个考虑在CNNs中替换传统神经模型的。例如，Jarrett et al. [11]宣称非线性函数f(x)=|tanh(x)|在Caltech-101数据集上对比度归一化后局部平均池化的效果是非常好的。然而，在这个数据集上首要的问题是防止过拟合，所以，它们观察到的结果是我们我们报告的通过使用Relus来获得加速拟合训练集能力的结果是不一样的。更快的学习对大数据集上的大模型有非常重大的影响。<br><img src="/img/figure1.png" alt="figure1"><br>Figure 1: 使用ReLus(实线)的四层卷积神经网络在CIFAR-10数据集上达到25%的训练错误率，比使用tanh(虚线)神经元的等效网络快了6倍。每一个网络的学习率被独立地选择使得训练尽可能的快。没有使用任何形式的正则化。在这里表现的结果随着网络结构的不同而变化，但是，使用ReLus的网络一贯地比使用饱和神经元的等效网络快好几倍。</p>
+<h3 id="3-2-Training-on-Multiple-GPUs"><a href="#3-2-Training-on-Multiple-GPUs" class="headerlink" title="3.2 Training on Multiple GPUs"></a>3.2 Training on Multiple GPUs</h3><p>一个GTX580 GPU仅仅有3GB的内存，这限制了在其上训练的网络的最大规模。事实是120万训练样本才足以训练网络，这太大了不适合在一个GPU上训练。因此，我们将网络分布在两个GPU上。当前的GPU非常适合跨GPU并行化，因为它们可以直接对另一块GPU进行读写操作，而不需要通过主机内存。我们采用的并行机制基本上每块GPU设置了一半的核函数(神经元)，一个额外的小技巧：GPU 的交流仅仅在某些层。意思是说，例如，第三层神经元的输入来自第二层的所有神经元。但是，第四层的神经元仅仅来自同一块GPU上第三层的神经元。选择这种连接方式对于交叉验证是一个问题，但是这允许我们精确地调整连接的数量直到计算数值是一个可以接受的值。<br>最终的结构是和Cire ̧sanet al. [5] 所采用的“柱状”CNN有点相似的，只是我们的柱状不是相互独立的(如图2)。这个机制分别减小了我们的top1错误率1.7% 和 top5错误率1.2%，和每个卷积层许多神经元在同一块GPU上训练像比较起来，两块GPU网络比一块GPU花费更少的时间。</p>
+<h3 id="3-3-Local-Response-Normalization"><a href="#3-3-Local-Response-Normalization" class="headerlink" title="3.3 Local Response Normalization"></a>3.3 Local Response Normalization</h3><p>Relus 有一个良好的特性，它不要求输入归一化来防止饱和。如果至少一些训练数据产生了一个积极的输入给Relus，那个神经元将开始学习。然而，我们还发现接下来的局部归一化机制促进了泛化。用a表示通过核函数i在神经元(x,y)处计算得到的激活值，然后应用Relu非线性变换，响应归一化b通过表达式给出:<br><img src="/img/lrn.png" alt="lrn表达式"><br>在n个相邻的核函数的同一空间位置求和，N是每层总的核函数数量。核函数的顺序在开始训练之前都是任意的而且是确定的。受真实神经元的启发，响应归一化的顺序实现了单侧抑制的形式，为使用不同核函数计算的神经元输出创造了竞争。常量k,n，阿尔法，贝塔，是超参数，它的值使用一个验证集来确定，我们使k=2,n=5,阿尔法=10^-4,贝塔=0.75.我们在一些层应用ReLu非线性变换之后，采用这个归一化。<br>这个机制和局部常量归一化有一些相似。但是我们的更准确的说是“亮度归一化”，因为我们没有减去平均值。响应归一化将top-1和top-5错误率分别减少了1.4%和1.2%.我们也在CIFAR-10 数据集上验证了这个机制的有效性：一个四层的CNN不用归一化达到了13%的测试错误率，用了之后为11%.</p>
+<h3 id="3-4-Overlapping-Pooling"><a href="#3-4-Overlapping-Pooling" class="headerlink" title="3.4 Overlapping Pooling"></a>3.4 Overlapping Pooling</h3><p>在CNN中池化层总结了同一个核函数下相邻神经元的输出。传统的，相邻池化单元的总结不重叠。为了更精确，一个池化层可以被认为是由相邻S个像素的池化网格所组成，每个总结是池化单元中心的邻近z X z单元。如果我们假设s=z，我们获得CNN中传统的局部池化。如果设s&lt;z,我们获得重叠池化。这是我们的网络里使用的参数，s=2,z=3。这个机制减小了top1错误率0.4%，top5错误率0.3%，和不重叠机制s=2,z=2比较起来,它减小了等效面积的输出。我们观察并发现，在训练有重叠池化的模型中拟合是有一点困难的。</p>
+<h3 id="3-5-Overall-Architecture"><a href="#3-5-Overall-Architecture" class="headerlink" title="3.5 Overall Architecture"></a>3.5 Overall Architecture</h3><p>现在我们准备好介绍我们CNN的整体架构了。像第二节描绘的那样，网络包含8层权重，前5层是卷积层和 3层全链接层。最后一层全连接层的输出传给一个1000的softmax函数，产生一个1000种标签的分类。<br><img src="/img/figure2.png" alt="figure2"><br>第2,4,5卷积层的核函数仅仅和GPU上前一层的那些映射结果相连接。第三层卷积层和第二层所有的映射结果相连接。全连接层的神经元和前一层所有的神经元相连。响应归一化层连接在第1,2卷积层后面。最大池化层，如第3,4节描述的那样，连接在响应归一化层和第5卷基层后面。ReLu非线性函数应用在每一个卷积层和全连接层后面。<br>第1个卷积层用96个11X11X3的滤波器对224X224X3的图像以步长为4做滤波。第2层卷积层以第1层卷积层(响应归一化和池化之后)的结果为输入，用256个5X5X48的滤波器做滤波。第3,4,5卷积层互相连接没有任何池化，归一的干扰。第三层卷积层有384个3X3X256 的核函数连接在第二层卷积层归一化，池化之后。第四层卷积层有384个3X3X192核函数连接，第五层有256个3x3X192的核函数连接，全连接层各有4096个神经元。</p>
+<h2 id="4-Reducing-Overfitting"><a href="#4-Reducing-Overfitting" class="headerlink" title="4 Reducing Overfitting"></a>4 Reducing Overfitting</h2><p>我们的神经网络结构有6000万参数。尽管ILSVRC的1000种使得每一个训练样例增加了10倍的限制，从图像到标签，这说明不考虑过拟合来学习这么多的参数是不足的。下面，我们介绍两种主要的防止过拟合的方法。</p>
+<h3 id="4-1-Data-Augmentation"><a href="#4-1-Data-Augmentation" class="headerlink" title="4.1 Data  Augmentation"></a>4.1 Data  Augmentation</h3><p>在图像数据上最容易也是最常见的减少过拟合的方法是通过标签保存转换人工地增大数据集(e.g., [25, 4, 5])。我们采用两种不同形式的数据增强，两者都允许原始图像经过一些运算来产生转换后的图像，所以转换后的图像不必存储在磁盘上。我们在实际操作中，转换的图片通过python代码在CPU上产生，同时GPU在图像的前一个batch上训练。所以这些数据增强机制实际上是计算自由的。<br>第一个数据增强的方式由图片转换和水平翻转组成。我们实现它通过在256X256的图片上随机提取224x224的patches(和它们的水平镜像)并且在这些提取出来的Patches上训练我们的网络。这使我们的训练集规模增加了2048，当然，训练样本的结果是高度相互依存的。没有这个方案，我们的网络会遭受大量的过拟合，那将会迫使我们使用更小的网络。在测试阶段，网络会做一个预测通过提取5个224X224的patches(四个角的patches和中心patches)和它们的水平镜像(因此一共10个patches)，并且通过网络的softmax层平均这10个patches上的预测。<br>第2种数据增强的方式是改变训练图片上RGB通道的强度。特别的，我们在ImageNet训练集上对RGB像素值做PCA操作。对每一张训练图片，我们成倍的增加已有的主成分，比例大小为对应特征值的随机变量，符合0均值，0.1标准差的高斯分布。<br><img src="/img/pca.png" alt="pca"><br>p和入是RGB像素值3X3协方差矩阵的特征向量和特征值，阿尔法是上述的随机变量。每个阿尔法只描述一次一张特定图片的所有像素值，直到这张图片被再次训练，每个点再次被描绘。这个方案大概捕捉了自然图像的重要性质，也就是说，对象标识对于光照强度和颜色的变化是不变的。这个方案减少了top-1错误率1%.</p>
+<h3 id="4-2-Dropout"><a href="#4-2-Dropout" class="headerlink" title="4.2  Dropout"></a>4.2  Dropout</h3><p>结合许多不同模型的预测是减小测试错误非常成功的方式，但是这对于大的神经网络来说似乎代价太大了，需要花费好多天来训练。然而，这有一个联合模型的非常有效的版本仅仅花费两天训练。最新引进的技术，“Dropout”,以50%的概率对每一个隐含层的输出置0。被“Dropout”的这些神经元对前向传播不做贡献，也不参与后向传播。所以，每次一个输入被展示的时候，神经网络表现出不同的结构，但是所有这些结构共享权重。这个技术减少了神经元的复杂的互相适应，由于一个神经元不能依赖其他特定神经元的存在。因此，学习更多稳定的特征是紧迫的，这些特征对连接其他神经元的许多不同随机集合是非常有用的。在测试阶段，我们使用所有的神经元但是对它们的输出乘以0.5，这是一个合理的近似，采取由指数丢包网络产生的预测分布的几何平均值。<br>我们在前两层全连接层使用dropout。没有dropout，我们的网络表现出大量的过拟合。孤过拟合大概使达到收敛的次数增加两倍。</p>
+<h2 id="5-Details-of-learning"><a href="#5-Details-of-learning" class="headerlink" title="5  Details of learning"></a>5  Details of learning</h2><p><img src="/img/figure3.png" alt="figure3"><br>我们使用随机梯度下降训练我们的模型，batch大小为128，momentum0.9，权重衰减率0.0005。我们发现小的学习衰减率对于模型学习是非常重要的。换句话说，权重衰减不仅仅是正则化：它减小了模型的训练错误。权重w的更新规则为：<br><img src="img/genx.png" alt="w"><br>i是迭代索引，v是变量momentum,e是学习率，是第i个batch上关于W的倒数的均值。<br>我们以0均值，标准差0.01的高斯分布初始化每一层的权重。初始化神经元偏置值在第2,4,5卷积层和全连接层为常量1.这些初始值通过给Relus提供积极的输入来加速了学习的早期阶段。我们将其余层的神经元偏置值初始化为0。<br>我们对所有层使用相等的学习速率，手动地调整训练。我们使用的这个启发式是为了当验证错误率停止提高当前学习率时以10为单位分割学习率。学习率初始化为0.01并且在终止之前减少三倍。我们用两块NVIDIA GTX 580 3GB GPUs.在1200万张图片的训练集上训练这个网络90次，花费了5,6天的时间。</p>
+<h2 id="6-Result"><a href="#6-Result" class="headerlink" title="6 Result"></a>6 Result</h2><p><img src="/img/table1.png" alt="table1"><br>ILSVRC-2010的结果总结在table中。我们的网络实现top-1和top-5测试集错误率37.5%和17%。  ILSVRC-2010比赛中最好的表现以平均预测值的方法是47.1%和28.2%，平均了不同特征上训练的六个稀疏编码模型产生的预测值，因此，以平均预测值的方法最好的结果是45.7%和25.7%，平均了两类密集采样特点计算出的Fisher向量训练的两个分类器的预测。<br>我们也把我们的模型用在ILSVRC-2012比赛中并且记录结果在Table2中。因为ILSVRC-2012测试集标签不是公开可用的，我们不能记录我们训练的所有模型的测试错误率。在这段剩下的部分，我们交换地使用验证和测试错误率，因为在我们的经验里，它们的不同超过0.1%(如图2)。这篇文章中描述的CNN实现了top-5错误率18.2%。五个相似的CNN错误率预测的平均值是16.4%。训练一个在最后一层pooling层额外增加第六层卷积层的CNN，来分类整个Imagenet 2011的数据集，并且微调它在ILSVRC-2012上，得到一个16.6%的错误率。平均两个CNN的预测，得到一个15.3%的错误率。第二名达到了26.2%的错误率，平均了不同密集采样特点计算出的Fisher向量训练的七个分类器的预测。<br><img src="/img/table2.png" alt="table2"><br>最后，我们也记录我们在ImageNet 2009上的错误率，包括10184种类别和8900万张图片。在这个数据集上我们遵循一半图片训练一半图片测试的这个惯例。因为这个没有建立好的测试集，我们必要的分割和之前作者的分割是不同的，但是对结果没有明显的影响。在这个数据集上使用在pooling层添加第六层卷积层的网络，我们获得的top-1和top-5错误率为67.4%和40.9%。这个数据集上之前最好的结果是78.1%和60.9%。</p>
+<h3 id="6-1-Qualitative-Evaluations"><a href="#6-1-Qualitative-Evaluations" class="headerlink" title="6.1 Qualitative Evaluations"></a>6.1 Qualitative Evaluations</h3><p>图3 显示了通过网络的两个数据连接层学习到的卷积核。网络已经学习了各种频率和方向选择性的核和各种颜色模块。注意两片GPU的特别展示，3.5节描述的限制连接的结果。第1片GPU上的卷积核大部分是色彩不可知的，第２片上的大部分是特定颜色的。这种特别的情况发生在程序的每一次运行并且独立于任意特定的随机权重初始化。</p>
+<p><img src="/img/figure4.png" alt="figure4"></p>
+<p>在图４的左半部分，我们定性地评估网络通过计算８个测试图片top-5预测的学习。注意到偏离中心的物体，例如左上角的螨，能被网络识别出来。标签的top-5大都看起来很合理。例如，仅仅其他猫的类型被认为是豹貌似是合理的。在一些例子中(护栅，樱桃)，关于照片的预期焦点存在真正的歧义。<br>另一个探查网络视觉知识的方法是考虑图片在最后一个4096维隐含层的特征激活。如果两张图片产生的特征激活向量有一个小的欧氏距离，我们就可以说神经网络的高层特征认为它们是相似的。图４显示了依据这个原理来判定测试集的５张和训练集的６张最相似的图片。注意到在像素层级，恢复的训练图片通常不是很接近第一列的图片。例如，恢复的狗和大象在很多姿势上都是相似的。在补充材料中我们展示了更多的测试图片。<br>通过欧式距离来计算两个4096维之间的相似度，真实值向量是低效的，但是通过训练一个自动编码来把这些向量压缩到短的二进制码可能是有效的。这可能产生一个更好的图像恢复方法比直接应用自动编码器到原始像素上，它没有使用图像标签，因此有一个恢复图像边缘相似模式的趋势，无论它们在语义上是不是相似的。</p>
+<h2 id="7-Discussion"><a href="#7-Discussion" class="headerlink" title="7 Discussion"></a>7 Discussion</h2><p>我们的结果展现了一个大型的，深度卷积神经网络是可以在一个高水平的挑战赛数据集上使用纯的监督学习来打破记录的。值得注意的是，如果有一个卷积层被去掉了，我们的网路效率就会降低。例如，去掉任何一个中间层会导致网络在top-1的结果损失２％。所以，深度对于实现我们的结果是非常重要的。<br>为了简化我们的实验，我们没有使用任何无监督的预训练即使我们希望那将会帮助我们，尤其是如果我们获得足够的计算能力来显著地增加网络的规模而不用相应地增加标签数据。因此，我们的结果已经提高了因为我们已经使我们的网络更大并且训练它更久，但是为了符合人类视觉系统的行为方式我们依然有许多数量级去探索。最终，我们会在视频序列上使用非常大型的深度卷积网络，视频序列的时序结构会提供非常有用的信息，静态图像中的缺失或不太明显。</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>[1] R.M. Bell and Y. Koren. Lessons from the netflix prize challenge. ACM SIGKDD Explorations Newsletter 9(2):75–79, 2007.<br>[2] A. Berg, J. Deng, and L. Fei-Fei. Large scale visual recognition challenge 2010. www.image-<br>net.org/challenges. 2010.<br>[3] L. Breiman. Random forests. Machine learning, 45(1):5–32, 2001.<br>[4] D. Cire ̧san, U. Meier, and J. Schmidhuber. Multi-column deep neural networks for image classification.Arxiv preprint arXiv:1202.2745, 2012.<br>[5] D.C. Cire ̧san, U. Meier, J. Masci, L.M. Gambardella, and J. Schmidhuber. High-performance neural networks for visual object classification. Arxiv preprint arXiv:1102.0183, 2011.<br>[6] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei. ImageNet: A Large-Scale HierarchicalImage Database. In CVPR09, 2009.<br>[7] J. Deng, A. Berg, S. Satheesh, H. Su, A. Khosla, and L. Fei-Fei. ILSVRC-2012, 2012. URL<br><a href="http://www.image-net.org/challenges/LSVRC/2012/" target="_blank" rel="external">http://www.image-net.org/challenges/LSVRC/2012/</a>.<br>[8] L. Fei-Fei, R. Fergus, and P. Perona. Learning generative visual models from few training examples: Anincremental bayesian approach tested on 101 object categories. Computer Vision and Image Understand-ing, 106(1):59–70, 2007.<br>[9] G. Griffin, A. Holub, and P. Perona. Caltech-256 object category dataset. Technical Report 7694, Cali-fornia Institute of Technology, 2007. URL <a href="http://authors.library.caltech.edu/7694" target="_blank" rel="external">http://authors.library.caltech.edu/7694</a>.<br>[10] G.E. Hinton, N. Srivastava, A. Krizhevsky, I. Sutskever, and R.R. Salakhutdinov. Improving neural net-works by preventing co-adaptation of feature detectors. arXiv preprint arXiv:1207.0580, 2012.<br>[11] K. Jarrett, K. Kavukcuoglu, M. A. Ranzato, and Y. LeCun. What is the best multi-stage architecture for object recognition? In International Conference on Computer Vision, pages 2146–2153. IEEE, 2009.<br>[12] A. Krizhevsky. Learning multiple layers of features from tiny images. Master’s thesis, Department of Computer Science, University of Toronto, 2009.<br>[13] A. Krizhevsky. Convolutional deep belief networks on cifar-10. Unpublished manuscript, 2010.<br>[14] A. Krizhevsky and G.E. Hinton. Using very deep autoencoders for content-based image retrieval. InESANN, 2011.<br>[15] Y. Le Cun, B. Boser, J.S. Denker, D. Henderson, R.E. Howard, W. Hubbard, L.D. Jackel, et al. Hand-written digit recognition with a back-propagation network. In Advances in neural information processing systems, 1990.<br>[16] Y. LeCun, F.J. Huang, and L. Bottou. Learning methods for generic object recognition with invariance to pose and lighting. In Computer Vision and Pattern Recognition, 2004. CVPR 2004. Proceedings of the 2004 IEEE Computer Society Conference on, volume 2, pages II–97. IEEE, 2004.<br>[17] Y. LeCun, K. Kavukcuoglu, and C. Farabet. Convolutional networks and applications in vision. In Circuits and Systems (ISCAS), Proceedings of 2010 IEEE International Symposium on, pages 253–256. IEEE, 2010.<br>[18] H. Lee, R. Grosse, R. Ranganath, and A.Y. Ng. Convolutional deep belief networks for scalable unsuper-vised learning of hierarchical representations. In Proceedings of the 26th Annual International Conference on Machine Learning, pages 609–616. ACM, 2009.<br>[19] T. Mensink, J. Verbeek, F. Perronnin, and G. Csurka. Metric Learning for Large Scale Image Classifi-cation: Generalizing to New Classes at Near-Zero Cost. In ECCV - European Conference on ComputerVision, Florence, Italy, October 2012.<br>[20] V. Nair and G. E. Hinton. Rectified linear units improve restricted boltzmann machines. In Proc. 27th International Conference on Machine Learning, 2010.<br>[21] N. Pinto, D.D. Cox, and J.J. DiCarlo. Why is real-world visual object recognition hard? PLoS computa-tional biology, 4(1):e27, 2008.<br>[22] N. Pinto, D. Doukhan, J.J. DiCarlo, and D.D. Cox. A high-throughput screening approach to discovering good forms of biologically inspired visual representation. PLoS computational biology, 5(11):e1000579, 2009.<br>[23] B.C. Russell, A. Torralba, K.P. Murphy, and W.T. Freeman. Labelme: a database and web-based tool for image annotation. International journal of computer vision, 77(1):157–173, 2008.<br>[24] J. Sánchez and F. Perronnin. High-dimensional signature compression for large-scale image classification. In Computer Vision and Pattern Recognition (CVPR), 2011 IEEE Conference on, pages 1665–1672. IEEE,2011.<br>[25] P.Y. Simard, D. Steinkraus, and J.C. Platt. Best practices for convolutional neural networks applied to visual document analysis. In Proceedings of the Seventh International Conference on Document Analysis and Recognition, volume 2, pages 958–962, 2003.<br>[26] S.C. Turaga, J.F. Murray, V. Jain, F. Roth, M. Helmstaedter, K. Briggman, W. Denk, and H.S. Seung. Con-volutional networks can learn to generate affinity graphs for image segmentation. Neural Computation,22(2):511–538, 2010.</p>
+<p>　　　　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/07/24/AlexNet论文翻译/" data-id="civ7w2ynj0003mjuai3jgsn1q" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/25/AlexNet论文总结/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(总结篇)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/21/Hello-Blog/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello world</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/11/06/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/10/ZfNet论文翻译/">ZfNet论文翻译</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/25/AlexNet论文总结/">AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(总结篇)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/24/AlexNet论文翻译/">AlexNet论文--ImageNet Classification with Deep Convolution Neural Network(翻译篇)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/07/21/Hello-Blog/">Hello world</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
